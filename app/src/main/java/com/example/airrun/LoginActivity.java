@@ -2,53 +2,47 @@ package com.example.airrun;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import java.io.ByteArrayOutputStream;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
+
     private EditText inputName, inputAge;
     private ImageView imageProfile;
     private Bitmap profileImageBitmap;
-    private static final int REQUEST_IMAGE_CAPTURE = 1;
     private SQLiteDatabase database;
+
+    private final ActivityResultLauncher<Intent> takePictureLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    Intent data = result.getData();
+                    if (data != null && data.getExtras() != null) {
+                        profileImageBitmap = (Bitmap) data.getExtras().get("data");
+                        imageProfile.setImageBitmap(profileImageBitmap);
+                    }
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        TextView textTitle = findViewById(R.id.text_title);
-
-        String fullText = getString(R.string.login_title);
-
-        SpannableString spannable = new SpannableString(fullText);
-
-        int firstYour = fullText.indexOf("Your");
-        int secondYour = fullText.indexOf("your", firstYour + 1);
-        int thirdYour = fullText.lastIndexOf("your");
-
-        ForegroundColorSpan colorSpan = new ForegroundColorSpan(Color.BLACK);
-        spannable.setSpan(colorSpan, firstYour, firstYour + 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        spannable.setSpan(colorSpan, secondYour, secondYour + 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        spannable.setSpan(colorSpan, thirdYour, thirdYour + 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        textTitle.setText(spannable);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -58,23 +52,34 @@ public class LoginActivity extends AppCompatActivity {
         Button buttonTakePhoto = findViewById(R.id.button_take_photo);
         Button buttonLogin = findViewById(R.id.button_login);
 
+        // Database setup
         SQLiteOpenHelper dbHelper = new DatabaseHelper(this);
         database = dbHelper.getWritableDatabase();
 
-        // Ambil Foto
+        // Periksa izin kamera
+        checkCameraPermission();
+
+        // Tombol ambil foto
         buttonTakePhoto.setOnClickListener(v -> {
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_GRANTED) {
+                // Buka kamera
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                    takePictureLauncher.launch(takePictureIntent);
+                }
+            } else {
+                // Jika izin belum diberikan
+                Toast.makeText(this, "Izin kamera diperlukan untuk mengambil foto.", Toast.LENGTH_SHORT).show();
             }
         });
 
-        // Simpan Data dan pindah ke halaman utama
+        // Tombol login
         buttonLogin.setOnClickListener(v -> {
             String name = inputName.getText().toString();
             String age = inputAge.getText().toString();
 
-            if (name.isEmpty() || age.isEmpty() || profileImageBitmap == null) {
+            if (name.isEmpty() || age.isEmpty()) {
                 Toast.makeText(this, "Semua data harus diisi!", Toast.LENGTH_SHORT).show();
             } else {
                 saveToDatabase(name, Integer.parseInt(age), profileImageBitmap);
@@ -88,13 +93,25 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    private void checkCameraPermission() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Minta izin kamera
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.CAMERA},
+                    CAMERA_PERMISSION_REQUEST_CODE);
+        }
+    }
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            profileImageBitmap = (Bitmap) extras.get("data");
-            imageProfile.setImageBitmap(profileImageBitmap);
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Izin kamera diberikan!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Izin kamera ditolak. Anda tidak dapat mengambil foto.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

@@ -127,10 +127,10 @@
 
         <!-- Pause Button -->
         <Button
-            android:id="@+id/button_pause"
+            android:id="@+id/finish_jogging_button"
             android:layout_width="100dp"
             android:layout_height="48dp"
-            android:text="Pause"
+            android:text="Finish"
             android:layout_gravity="center"
             android:backgroundTint="#007BFF"
             android:drawablePadding="8dp"

@@ -12,9 +12,9 @@
         android:id="@+id/header_section"
         android:layout_width="match_parent"
         android:layout_height="164dp"
-        android:background="@drawable/blue_graph"
+        android:background="@drawable/drawable_shape_6"
         android:orientation="horizontal"
-        android:padding="16dp"
+        android:padding="30dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -71,20 +71,6 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Tombol Start Jogging -->
-            <Button
-                android:id="@+id/button_start_jogging"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginBottom="20dp"
-                android:backgroundTint="#135EAE"
-                android:elevation="4dp"
-                android:fontFamily="@font/poppins_medium"
-                android:text="Start Jogging!"
-                android:textColor="#FFFFFF" />
-
-            <!-- Aktivitas Saat Ini -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -112,6 +98,22 @@
                     android:textColor="#666666"
                     android:layout_marginTop="8dp" />
             </LinearLayout>
+
+            <!-- Tombol Start Jogging -->
+            <Button
+                android:id="@+id/button_start_jogging"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="20dp"
+                android:backgroundTint="#135EAE"
+                android:elevation="4dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="Start Jogging!"
+                android:textColor="#FFFFFF" />
+
+            <!-- Aktivitas Saat Ini -->
+
 
             <!-- Recent Activities -->
             <TextView

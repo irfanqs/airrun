@@ -1,69 +1,46 @@
 package com.example.airrun;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 
-import java.util.ArrayList;
-import java.util.List;
+public class JoggingActivity extends AppCompatActivity {
 
-public class JoggingActivity extends AppCompatActivity implements OnMapReadyCallback {
-
-    private GoogleMap mMap;
+    private SQLiteDatabase database;
+    private DatabaseHelper dbHelper;
+    private Button finishJoggingButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jogging);
 
-        // Initialize the map fragment
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map_fragment);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
-        }
+        dbHelper = new DatabaseHelper(this);
+        database = dbHelper.getWritableDatabase();
+
+        finishJoggingButton = findViewById(R.id.finish_jogging_button);
+        finishJoggingButton.setOnClickListener(v -> finishJogging());
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+    private void finishJogging() {
+        String distance = "10.9 km";
+        String duration = "01:09:44";
+        String calories = "539 kcal";
+        String date = "November 26, 2024";
+        String details = distance + " | " + duration + " | " + calories;
 
-        // Add a sample route for jogging
-        List<LatLng> joggingRoute = getSampleRoute();
+        // Menyimpan data ke SQLite
+        ContentValues values = new ContentValues();
+        values.put("date", date);
+        values.put("details", details);
+        database.insert("jogging_activities", null, values);
 
-        // Add markers at the start and end points
-        if (!joggingRoute.isEmpty()) {
-            mMap.addMarker(new MarkerOptions().position(joggingRoute.get(0)).title("Start"));
-            mMap.addMarker(new MarkerOptions().position(joggingRoute.get(joggingRoute.size() - 1)).title("End"));
-
-            // Draw the polyline
-            PolylineOptions polylineOptions = new PolylineOptions()
-                    .addAll(joggingRoute)
-                    .width(8f)
-                    .color(getResources().getColor(R.color.blue)); // Set the color of the route
-            Polyline polyline = mMap.addPolyline(polylineOptions);
-
-            // Move the camera to the start point
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(joggingRoute.get(0), 15f));
-        }
-    }
-
-    private List<LatLng> getSampleRoute() {
-        // This is a sample route; replace with actual GPS data
-        List<LatLng> route = new ArrayList<>();
-        route.add(new LatLng(55.8189, 37.6118)); // Start point
-        route.add(new LatLng(55.8195, 37.6145));
-        route.add(new LatLng(55.8201, 37.6170));
-        route.add(new LatLng(55.8210, 37.6200)); // Midpoint
-        route.add(new LatLng(55.8220, 37.6225));
-        route.add(new LatLng(55.8230, 37.6240)); // End point
-        return route;
+        // Menampilkan Toast dan kembali ke MainActivity
+        Toast.makeText(this, "Jogging activity saved", Toast.LENGTH_SHORT).show();
+        finish(); // Kembali ke MainActivity
     }
 }
