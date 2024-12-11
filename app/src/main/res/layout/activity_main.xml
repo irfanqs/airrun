@@ -23,9 +23,9 @@
             android:id="@+id/profile_image"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:background="@drawable/circle_background"
+            android:background="@drawable/white_stroke_bg"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_profile_placeholder" />
+            android:src="@drawable/drawable_image_12" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -133,14 +133,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:background="@drawable/rounded_card"
+                    android:background="@drawable/rounded_corners"
                     android:padding="16dp"
                     android:layout_marginBottom="8dp">
 
                     <ImageView
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:src="@drawable/ic_map_placeholder" />
+                        android:src="@drawable/image_stats_icon_distance" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -188,7 +188,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/iconMenu"
+            android:src="@drawable/icon_menu"
             android:contentDescription="Home" />
 
         <ImageView
@@ -196,7 +196,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/iconAchievements"
+            android:src="@drawable/icon_achievements"
             android:contentDescription="Achievement" />
 
         <ImageView
@@ -204,7 +204,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/iconProfile"
+            android:src="@drawable/icon_profile"
             android:contentDescription="Profile" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

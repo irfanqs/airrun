@@ -69,7 +69,7 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/iconStats" />
+                    android:src="@drawable/icon_stats" />
 
                 <TextView
                     android:id="@+id/distance"
@@ -91,7 +91,7 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/iconCalories" />
+                    android:src="@drawable/icon_calories" />
 
                 <TextView
                     android:id="@+id/calories"
@@ -113,7 +113,7 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/iconSpeed" />
+                    android:src="@drawable/icon_speed" />
 
                 <TextView
                     android:id="@+id/speed"
