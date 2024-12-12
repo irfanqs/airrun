@@ -1,4 +1,6 @@
 package com.example.airrun;
 
-public class AchievementActivity {
+import androidx.appcompat.app.AppCompatActivity;
+
+public class AchievementActivity extends AppCompatActivity {
 }

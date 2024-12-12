@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -36,6 +35,21 @@
             android:name=".MainActivity"
             android:exported="true" />
 
+        <!-- JoggingActivity -->
+        <activity
+            android:name=".JoggingActivity"
+            android:exported="true" />
+
+        <!-- AchievementActivity -->
+        <activity
+            android:name=".AchievementActivity"
+            android:exported="true" />
+
+        <!-- ProfileActivity -->
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="true" />
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
@@ -45,6 +59,5 @@
             android:value="AIzaSyDwlWLhPKfflMwn5bHaf8AZSc3zFsGGGiQ" />
 
     </application>
-
 
 </manifest>
