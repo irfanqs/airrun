@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -21,10 +22,13 @@ public class MainActivity extends AppCompatActivity {
     private TextView activityDate;
     private TextView activityDetails;
 
+    private static final int REQUEST_JOGGING_ACTIVITY = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Cek apakah pengguna sudah login
         SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         boolean isLoggedIn = preferences.getBoolean("isLoggedIn", true);
 
@@ -37,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
+        // Inisialisasi UI
         ImageView profileImage = findViewById(R.id.profile_image);
         TextView userName = findViewById(R.id.user_name);
         TextView userLevel = findViewById(R.id.user_level);
@@ -45,6 +50,40 @@ public class MainActivity extends AppCompatActivity {
         DatabaseHelper dbHelper = new DatabaseHelper(this);
         database = dbHelper.getReadableDatabase();
 
+        // Tampilkan data pengguna
+        loadUserData(profileImage, userName, userLevel);
+
+        // Tampilkan aktivitas jogging terbaru
+        currentActivityDetails = findViewById(R.id.current_activity_details);
+        activityDate = findViewById(R.id.activity_date);
+        activityDetails = findViewById(R.id.activity_details);
+
+        loadRecentActivity();
+
+        // Tombol untuk memulai jogging
+        buttonStartJogging.setOnClickListener(v -> {
+            Intent intent = new Intent(this, JoggingActivity.class);
+            startActivityForResult(intent, REQUEST_JOGGING_ACTIVITY);
+        });
+
+        // Navigasi
+        findViewById(R.id.nav_main).setOnClickListener(v -> {});
+
+        findViewById(R.id.nav_achievement).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, AchievementActivity.class);
+            startActivity(intent);
+        });
+
+        findViewById(R.id.nav_profile).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+            startActivity(intent);
+        });
+    }
+
+    /**
+     * Memuat data pengguna dari tabel "users" di database.
+     */
+    private void loadUserData(ImageView profileImage, TextView userName, TextView userLevel) {
         Cursor cursor = database.query("users", null, null, null, null, null, null);
         if (cursor.moveToLast()) {
             int nameIndex = cursor.getColumnIndex("name");
@@ -73,42 +112,35 @@ public class MainActivity extends AppCompatActivity {
             userLevel.setText("Beginner");
         }
         cursor.close();
+    }
 
-        // Menampilkan aktivitas terbaru
-        currentActivityDetails = findViewById(R.id.current_activity_details);
-        activityDate = findViewById(R.id.activity_date);
-        activityDetails = findViewById(R.id.activity_details);
-
-        Cursor recentActivityCursor = database.query("jogging_activities", null, null, null, null, null, "date DESC", "1");
-        if (recentActivityCursor.moveToFirst()) {
-            @SuppressLint("Range") String date = recentActivityCursor.getString(recentActivityCursor.getColumnIndex("date"));
-            @SuppressLint("Range") String details = recentActivityCursor.getString(recentActivityCursor.getColumnIndex("details"));
+    /**
+     * Memuat aktivitas jogging terbaru dari tabel "jogging_activities".
+     */
+    private void loadRecentActivity() {
+        Cursor cursor = database.query("jogging_activities", null, null, null, null, null, "date DESC", "1");
+        if (cursor.moveToFirst()) {
+            @SuppressLint("Range") String date = cursor.getString(cursor.getColumnIndex("date"));
+            @SuppressLint("Range") String details = cursor.getString(cursor.getColumnIndex("details"));
 
             activityDate.setText(date);
             activityDetails.setText(details);
-            currentActivityDetails.setText(details); // Menampilkan aktivitas terbaru di bagian atas
+            currentActivityDetails.setText(details);
         } else {
             currentActivityDetails.setText("No recent activity");
         }
-        recentActivityCursor.close();
+        cursor.close();
+    }
 
-        // Menangani klik tombol Start Jogging
-        buttonStartJogging.setOnClickListener(v -> {
-            Intent intent = new Intent(this, JoggingActivity.class);
-            startActivity(intent);
-        });
-
-        findViewById(R.id.nav_main).setOnClickListener(v -> {
-        });
-
-        findViewById(R.id.nav_achievement).setOnClickListener(v -> {
-            Intent intent = new Intent(this, AchievementActivity.class);
-            startActivity(intent);
-        });
-
-        findViewById(R.id.nav_profile).setOnClickListener(v -> {
-            Intent intent = new Intent(this, ProfileActivity.class);
-            startActivity(intent);
-        });
+    /**
+     * Menangani hasil dari JoggingActivity.
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_JOGGING_ACTIVITY && resultCode == RESULT_OK) {
+            // Memuat ulang aktivitas terbaru setelah selesai jogging
+            loadRecentActivity();
+        }
     }
 }
