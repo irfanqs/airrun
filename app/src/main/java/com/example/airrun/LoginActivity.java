@@ -6,8 +6,10 @@ import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -81,6 +83,8 @@ public class LoginActivity extends AppCompatActivity {
 
             if (name.isEmpty() || age.isEmpty()) {
                 Toast.makeText(this, "Semua data harus diisi!", Toast.LENGTH_SHORT).show();
+            } else if (profileImageBitmap == null) {
+                Toast.makeText(this, "Harap ambil foto terlebih dahulu!", Toast.LENGTH_SHORT).show();
             } else {
                 saveToDatabase(name, Integer.parseInt(age), profileImageBitmap);
                 Toast.makeText(this, "Login berhasil!", Toast.LENGTH_SHORT).show();
@@ -116,6 +120,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void saveToDatabase(String name, int age, Bitmap profileImage) {
+        if (profileImage == null) {
+            throw new IllegalArgumentException("Profile image cannot be null");
+        }
+
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         profileImage.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] imageBytes = stream.toByteArray();
@@ -125,6 +133,7 @@ public class LoginActivity extends AppCompatActivity {
         values.put("age", age);
         values.put("profile_image", imageBytes);
 
-        database.insert("users", null, values);
+        long newRowId = database.insert("users", null, values);
+        Log.d("LoginActivity", "Data inserted with ID: " + newRowId);
     }
 }

@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        boolean isLoggedIn = preferences.getBoolean("isLoggedIn", false);
+        boolean isLoggedIn = preferences.getBoolean("isLoggedIn", true);
 
         if (!isLoggedIn) {
             Intent intent = new Intent(this, LoginActivity.class);

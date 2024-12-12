@@ -31,12 +31,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "duration TEXT, " +
                 "calories REAL, " +
                 "FOREIGN KEY(user_id) REFERENCES users(id))");
+
+        // Tabel untuk data jogging activities
+        db.execSQL("CREATE TABLE jogging_activities (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "user_id INTEGER, " +
+                "date TEXT, " +
+                "details TEXT, " +
+                "FOREIGN KEY(user_id) REFERENCES users(id))");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS activities");
         db.execSQL("DROP TABLE IF EXISTS users");
+        db.execSQL("DROP TABLE IF EXISTS jogging_activities"); // Drop tabel jogging_activities jika perlu
         onCreate(db);
     }
 }
